@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+        <title>Rainman</title>
+    </head>
+
+    <body>
+        <div class="container">
+            <h1>Welcome to Rainman!</h1>
+            <form method="post">
+                <h2>MQTT Settings</h2>
+                <div class="form-row">
+                  <div class="form-group col-md-6">
+                    <label for="MqttBrokerHost">MQTT Broker Host</label>
+                    <input type="text" class="form-control" id="MqttBrokerHost" name="MqttBrokerHost" value="%MqttBrokerHost%">
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label for="MqttBrokerPort">MQTT Broker Port</label>
+                    <input type="text" class="form-control" id="MqttBrokerPort" name="MqttBrokerPort" value="%MqttBrokerPort%">
+                  </div>
+                </div>
+
+                <h2>MQTT Topics</h2>
+                <div class="form-group">
+                  <label for="MqttCommandTopicBase">MQTT Command Topic Base</label>
+                  <input type="text" class="form-control" id="MqttCommandTopicBase" name="MqttCommandTopicBase" value="%MqttCommandTopicBase%">
+                  <small id="MqttCommandTopicBaseHelp" class="form-text text-muted">E.g. if you set this to "/rainman/set", then switch #3 will be switched by publishing to "/rainman/set/3"</small>
+                </div>
+                <div class="form-group">
+                  <label for="MqttStateTopicBase">MQTT State Topic Base</label>
+                  <input type="text" class="form-control" id="MqttStateTopicBase" name="MqttStateTopicBase" value="%MqttStateTopicBase%">
+                  <small id="MqttCommandTopicBaseHelp" class="form-text text-muted">E.g. if you set this to "/rainman/state", then the state of switch #3 will be published to "/rainman/state/3"</small>
+                </div>
+                <div class="form-group">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="MqttRetain" name="MqttRetain" %MqttRetainChecked%>
+                    <label class="form-check-label" for="MqttRetain">
+                      Retain published messages
+                    </label>
+                  </div>
+                </div>
+
+                <h2>MQTT Payloads</h2>
+                <div class="form-row">
+                  <div class="form-group col-md-6">
+                    <label for="MqttPayloadOn">Payload on</label>
+                    <input type="text" class="form-control" id="MqttPayloadOn" name="MqttPayloadOn" value="%MqttPayloadOn%">
+                    <small id="MqttPayloadOnHelp" class="form-text text-muted">Payload to respond to for switching on. Also used when publishing state in case switch is on.</small>
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label for="MqttPayloadOff">Payload off</label>
+                    <input type="text" class="form-control" id="MqttPayloadOff" name="MqttPayloadOff" value="%MqttPayloadOff%">
+                    <small id="MqttPayloadOffHelp" class="form-text text-muted">Payload to respond to for switching off. Also used when publishing state in case switch is off.</small>
+                  </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Save</button>
+              </form>
+        </div>
+    </body>
+</html>
