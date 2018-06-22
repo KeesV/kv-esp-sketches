@@ -32,6 +32,8 @@ void setup() {
         Serial.print(".");
     }
 
+    settings.DumpToSerial();
+
     Serial.println("");
     Serial.println("WiFi connected");
     Serial.println("IP address: ");

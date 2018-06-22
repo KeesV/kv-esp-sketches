@@ -81,6 +81,16 @@ void Settings::Save() {
     saveToEeprom(this->GetMqttPayloadOff(), MqttPayloadOffStartAddr, MqttPayloadOffLength);
 }
 
+void Settings::DumpToSerial() {
+    Serial.print("MqttBrokerHost: ");       Serial.println(this->GetMqttBrokerHost());
+    Serial.print("MqttBrokerPort: ");       Serial.println(this->GetMqttBrokerPort());
+    Serial.print("MqttCommandTopicBase: "); Serial.println(this->GetMqttCommandTopicBase());
+    Serial.print("MqttStateTopicBase: ");   Serial.println(this->GetMqttStateTopicBase());
+    Serial.print("MqttRetain: ");           Serial.println(this->GetMqttRetain());
+    Serial.print("MqttPayloadOn: ");        Serial.println(this->GetMqttPayloadOn());
+    Serial.print("MqttPayloadOff: ");       Serial.println(this->GetMqttPayloadOff());
+}
+
 void Settings::SetMqttBrokerHost(String value) {
     this->MqttBrokerHost = value;
 }

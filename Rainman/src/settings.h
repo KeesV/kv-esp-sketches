@@ -61,6 +61,7 @@ class Settings
     
     void Save();
     void EraseAll();
+    void DumpToSerial();
 };
 
 #endif
