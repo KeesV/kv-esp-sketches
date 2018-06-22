@@ -2,6 +2,7 @@
 #include <ESP8266WebServer.h>
 #include <FS.h>
 #include <ESPTemplateProcessor.h>
+#include "settings.h"
 
 void start_webserver();
 void handle_webserver();

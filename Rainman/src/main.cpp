@@ -2,6 +2,7 @@
 #include <ESP8266WiFi.h>
 #include "webserver.h"
 #include "screen.h"
+#include "settings.h"
 
 const char* ssid     = "KInternet";
 const char* password = "+RSWKCpvCm\\j6`4";
@@ -15,6 +16,7 @@ void setup() {
     pinMode(D4, OUTPUT);
     pinMode(D5, OUTPUT);
 
+    start_settings();
     start_screen();
 
     /* Explicitly set the ESP8266 to be a WiFi-client, otherwise, it by default,

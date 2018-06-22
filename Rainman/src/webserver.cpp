@@ -32,13 +32,13 @@ void send_file_from_spiffs(String filename, String contenttype)
 
 String indexProcessor(const String& key) {
     Serial.println(String("KEY IS ") + key);
-    if (key == "MqttBrokerHost") return "MQTT Host";
-    else if (key == "MqttBrokerPort") return "MQTT Port";
-    else if (key == "MqttCommandTopicBase") return "MQTT Command Topic Base";
-    else if (key == "MqttStateTopicBase") return "MQTT State Topic Base";
-    else if (key == "MqttRetainChecked") return "CHECKED";
-    else if (key == "MqttPayloadOn") return "MQTT Payload On";
-    else if (key == "MqttPayloadOff") return "MQTT Payload Off";
+    if (key == "MqttBrokerHostValue") return "value=\""+getMqttBrokerHost()+"\"";
+    else if (key == "MqttBrokerPortValue") return "value=\""+getMqttBrokerPort()+"\"";
+    else if (key == "MqttCommandTopicBaseValue") return "value=\""+getMqttCommandTopicBase()+"\"";
+    else if (key == "MqttStateTopicBaseValue") return "value=\""+getMqttStateTopicBase()+"\"";
+    else if (key == "MqttRetainCheckedValue") return getMqttRetain() == "1" ? "CHECKED" : " ";
+    else if (key == "MqttPayloadOnValue") return "value=\""+getMqttPayloadOn()+"\"";
+    else if (key == "MqttPayloadOffValue") return "value=\""+getMqttPayloadOff()+"\"";
 
     return "oops";
 }
@@ -51,6 +51,13 @@ void handle_index() {
         Serial.println("Failed sending index to client!");
         server.send(404, "text/plain", "page not found.");
     }
+}
+
+void handle_erase_settings() {
+    Serial.println("Erasing settings...");
+    eraseAllSettings();
+    server.sendHeader("Location", "/");
+    server.send(303);
 }
 
 void handle_bootstrap_min_css() {
@@ -91,6 +98,14 @@ void saveSettings() {
     Serial.print("MqttPayloadOff: ");
     Serial.println(MqttPayloadOff);
 
+    saveMqttBrokerHost(MqttBrokerHost);
+    saveMqttBrokerPort(MqttBrokerPort);
+    saveMqttCommandTopicBase(MqttCommandTopicBase);
+    saveMqttStateTopicBase(MqttStateTopicBase);
+    saveMqttPayloadOff(MqttPayloadOff);
+    saveMqttRetain(MqttRetain);
+    saveMqttPayloadOn(MqttPayloadOn);
+
     server.sendHeader("Location", "/");
     server.send(303);  
 }
@@ -101,6 +116,7 @@ void start_webserver() {
     server.on("/", HTTP_GET, handle_index);
     server.on("/", HTTP_POST, saveSettings);
     server.on("/bootstrap/css/bootstrap.min.css", handle_bootstrap_min_css);
+    server.on("/erase-settings", handle_erase_settings);
     server.onNotFound(handle_NotFound);
     
     server.begin();
