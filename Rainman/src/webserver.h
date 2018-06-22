@@ -4,5 +4,5 @@
 #include <ESPTemplateProcessor.h>
 #include "settings.h"
 
-void start_webserver();
+void start_webserver(Settings& settings);
 void handle_webserver();

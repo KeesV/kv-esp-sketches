@@ -7,6 +7,8 @@
 const char* ssid     = "KInternet";
 const char* password = "+RSWKCpvCm\\j6`4";
 
+Settings settings;
+
 void setup() {
     Serial.begin(115200);
     pinMode(D0, OUTPUT);
@@ -16,7 +18,6 @@ void setup() {
     pinMode(D4, OUTPUT);
     pinMode(D5, OUTPUT);
 
-    start_settings();
     start_screen();
 
     /* Explicitly set the ESP8266 to be a WiFi-client, otherwise, it by default,
@@ -36,7 +37,7 @@ void setup() {
     Serial.println("IP address: ");
     Serial.println(WiFi.localIP());
 
-    start_webserver();
+    start_webserver(settings);
 }
 
 void loop() {

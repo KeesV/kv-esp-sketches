@@ -1,35 +1,5 @@
 #include "settings.h"
 
-// String MqttBrokerHost;          //35 bytes | start 0, length 35
-// String MqttBrokerPort;          //8 bytes  | start 36, length 8
-// String MqttCommandTopicBase;    //35 bytes | start 44, length 35
-// String MqttStateTopicBase;      //35 bytes | start 79, length 35
-// String MqttRetain;              //5 bytes  | start 114, length 5
-// String MqttPayloadOn;           //10 bytes | start 119, length 10
-// String MqttPayloadOff;          //10 bytes | start 129, length 10
-//Total nr of bytes: 133
-
-#define MAX_EEPROM_SIZE 512
-
-#define MqttBrokerHostStartAddr         0
-#define MqttBrokerPortStartAddr         36
-#define MqttCommandTopicBaseStartAddr   44
-#define MqttStateTopicBaseStartAddr     79
-#define MqttRetainStartAddr             114
-#define MqttPayloadOnStartAddr          119
-#define MqttPayloadOffStartAddr         129
-#define MqttBrokerHostLength            35
-#define MqttBrokerPortLength            8
-#define MqttCommandTopicBaseLength      35
-#define MqttStateTopicBaseLength        35
-#define MqttRetainLength                5
-#define MqttPayloadOnLength             10
-#define MqttPayloadOffLength            10
-
-void start_settings() {
-    EEPROM.begin(MAX_EEPROM_SIZE);
-}
-
 void saveToEeprom(String val, int startAddr, int maxLength) {
     // Write length of the string in the first 2 bytes of the field, so that we know how long to read when getting the value
     String length = String(val.length());
@@ -78,115 +48,80 @@ String readFromEeprom(int startAddr, int maxLength)
         return retval; //If we don't have anything in EEPROM we'll just return an empty string
     }
 }
+Settings::Settings() {
+    EEPROM.begin(MAX_EEPROM_SIZE);
+    this->ReadAllSettingsFromEeprom();
+}
 
-void eraseAllSettings() {
+void Settings::ReadAllSettingsFromEeprom() {
+    this->SetMqttBrokerHost(readFromEeprom(MqttBrokerHostStartAddr, MqttBrokerHostLength));
+    this->SetMqttBrokerPort(readFromEeprom(MqttBrokerPortStartAddr, MqttBrokerPortLength));
+    this->SetMqttCommandTopicBase(readFromEeprom(MqttCommandTopicBaseStartAddr, MqttCommandTopicBaseLength));
+    this->SetMqttStateTopicBase(readFromEeprom(MqttStateTopicBaseStartAddr, MqttStateTopicBaseLength));
+    this->SetMqttRetain(readFromEeprom(MqttRetainStartAddr, MqttRetainLength));
+    this->SetMqttPayloadOn(readFromEeprom(MqttPayloadOnStartAddr, MqttPayloadOnLength));
+    this->SetMqttPayloadOff(readFromEeprom(MqttPayloadOffStartAddr, MqttPayloadOffLength));
+}
+
+void Settings::EraseAll() {
     for(int i = 0; i < MAX_EEPROM_SIZE; i++ ) {
         EEPROM.write(i, 0);
     }
     EEPROM.commit();
+    this->ReadAllSettingsFromEeprom();
 }
 
-void saveMqttBrokerHost(String value)
-{
-    if(value.length() > 0)
-    {
-        saveToEeprom(value, MqttBrokerHostStartAddr, MqttBrokerHostLength);
-    } else {
-        Serial.println("Invalid value received for MqttBrokerHost. Cannot save to EEPROM.");
-    }
+void Settings::Save() {
+    saveToEeprom(this->GetMqttBrokerHost(), MqttBrokerHostStartAddr, MqttBrokerHostLength);
+    saveToEeprom(this->GetMqttBrokerPort(), MqttBrokerPortStartAddr, MqttBrokerPortLength);
+    saveToEeprom(this->GetMqttCommandTopicBase(), MqttCommandTopicBaseStartAddr, MqttCommandTopicBaseLength);
+    saveToEeprom(this->GetMqttStateTopicBase(), MqttStateTopicBaseStartAddr, MqttStateTopicBaseLength);
+    saveToEeprom(this->GetMqttRetain(), MqttRetainStartAddr, MqttRetainLength);
+    saveToEeprom(this->GetMqttPayloadOn(), MqttPayloadOnStartAddr, MqttPayloadOnLength);
+    saveToEeprom(this->GetMqttPayloadOff(), MqttPayloadOffStartAddr, MqttPayloadOffLength);
 }
 
-String getMqttBrokerHost()
-{
-    return readFromEeprom(MqttBrokerHostStartAddr, MqttBrokerHostLength);
+void Settings::SetMqttBrokerHost(String value) {
+    this->MqttBrokerHost = value;
 }
 
-void saveMqttBrokerPort(String value)
-{
-    if(value.length() > 0)
-    {
-        saveToEeprom(value, MqttBrokerPortStartAddr, MqttBrokerPortLength);
-    } else {
-        Serial.println("Invalid value received for MqttBrokerPort. Cannot save to EEPROM.");
-    }
+String Settings::GetMqttBrokerHost() {
+    return this->MqttBrokerHost;
 }
 
-String getMqttBrokerPort()
-{
-    return readFromEeprom(MqttBrokerPortStartAddr, MqttBrokerPortLength);
+void Settings::SetMqttBrokerPort(String value) {
+    this->MqttBrokerPort = value;
 }
-
-void saveMqttCommandTopicBase(String value)
-{
-    if(value.length() > 0)
-    {
-        saveToEeprom(value, MqttCommandTopicBaseStartAddr, MqttCommandTopicBaseLength);
-    } else {
-        Serial.println("Invalid value received for MqttCommandTopicBase. Cannot save to EEPROM.");
-    }
+String Settings::GetMqttBrokerPort() {
+    return this->MqttBrokerPort;
 }
-
-String getMqttCommandTopicBase()
-{
-    return readFromEeprom(MqttCommandTopicBaseStartAddr, MqttCommandTopicBaseLength);
+void Settings::SetMqttCommandTopicBase(String value) {
+    this->MqttCommandTopicBase = value;
 }
-
-void saveMqttStateTopicBase(String value)
-{
-    if(value.length() > 0)
-    {
-        saveToEeprom(value, MqttStateTopicBaseStartAddr, MqttStateTopicBaseLength);
-    } else {
-        Serial.println("Invalid value received for MqttStateTopicBase. Cannot save to EEPROM.");
-    }
+String Settings::GetMqttCommandTopicBase() {
+    return this->MqttCommandTopicBase;
 }
-
-String getMqttStateTopicBase()
-{
-    return readFromEeprom(MqttStateTopicBaseStartAddr, MqttStateTopicBaseLength);
+void Settings::SetMqttStateTopicBase(String value) {
+    this->MqttStateTopicBase = value;
 }
-
-void saveMqttRetain(String value)
-{
-    if(value.length() == 0)
-    {
-        saveToEeprom("0", MqttRetainStartAddr, MqttRetainLength);
-    } else {
-        saveToEeprom("1", MqttRetainStartAddr, MqttRetainLength);
-    }
+String Settings::GetMqttStateTopicBase() {
+    return this->MqttStateTopicBase;
 }
-
-String getMqttRetain()
-{
-    return readFromEeprom(MqttRetainStartAddr, MqttRetainLength);
+void Settings::SetMqttRetain(String value) {
+    this->MqttRetain = (value.length() > 0 ? "1" : "0");
 }
-
-void saveMqttPayloadOn(String value)
-{
-    if(value.length() > 0)
-    {
-        saveToEeprom(value, MqttPayloadOnStartAddr, MqttPayloadOnLength);
-    } else {
-        Serial.println("Invalid value received for MqttPayloadOn. Cannot save to EEPROM.");
-    }
+String Settings::GetMqttRetain() {
+    return this->MqttRetain;
 }
-
-String getMqttPayloadOn()
-{
-    return readFromEeprom(MqttPayloadOnStartAddr, MqttPayloadOnLength);
+void Settings::SetMqttPayloadOn(String value) {
+    this->MqttPayloadOn = value;
 }
-
-void saveMqttPayloadOff(String value)
-{
-    if(value.length() > 0)
-    {
-        saveToEeprom(value, MqttPayloadOffStartAddr, MqttPayloadOffLength);
-    } else {
-        Serial.println("Invalid value received for MqttPayloadOff. Cannot save to EEPROM.");
-    }
+String Settings::GetMqttPayloadOn() {
+    return this->MqttPayloadOn;
 }
-
-String getMqttPayloadOff()
-{
-    return readFromEeprom(MqttPayloadOffStartAddr, MqttPayloadOffLength);
+void Settings::SetMqttPayloadOff(String value) {
+    this->MqttPayloadOff = value;
+}
+String Settings::GetMqttPayloadOff() {
+    return this->MqttPayloadOff;
 }

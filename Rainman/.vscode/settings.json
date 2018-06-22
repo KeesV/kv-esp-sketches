@@ -10,7 +10,8 @@
         "vector": "cpp",
         "initializer_list": "cpp",
         "functional": "cpp",
-        "type_traits": "cpp"
+        "type_traits": "cpp",
+        "list": "cpp"
     },
     "platformio-ide.forceUploadAndMonitor": true
 }

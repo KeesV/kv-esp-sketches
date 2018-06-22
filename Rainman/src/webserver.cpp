@@ -1,6 +1,7 @@
 #include "webserver.h"
 
 ESP8266WebServer server(80);
+Settings lSettings;
 
 // String getContentType(String filename){
 //   if(filename.endsWith(".htm")) return "text/html";
@@ -32,13 +33,13 @@ void send_file_from_spiffs(String filename, String contenttype)
 
 String indexProcessor(const String& key) {
     Serial.println(String("KEY IS ") + key);
-    if (key == "MqttBrokerHostValue") return "value=\""+getMqttBrokerHost()+"\"";
-    else if (key == "MqttBrokerPortValue") return "value=\""+getMqttBrokerPort()+"\"";
-    else if (key == "MqttCommandTopicBaseValue") return "value=\""+getMqttCommandTopicBase()+"\"";
-    else if (key == "MqttStateTopicBaseValue") return "value=\""+getMqttStateTopicBase()+"\"";
-    else if (key == "MqttRetainCheckedValue") return getMqttRetain() == "1" ? "CHECKED" : " ";
-    else if (key == "MqttPayloadOnValue") return "value=\""+getMqttPayloadOn()+"\"";
-    else if (key == "MqttPayloadOffValue") return "value=\""+getMqttPayloadOff()+"\"";
+    if (key == "MqttBrokerHostValue") return "value=\""+lSettings.GetMqttBrokerHost()+"\"";
+    else if (key == "MqttBrokerPortValue") return "value=\""+lSettings.GetMqttBrokerPort()+"\"";
+    else if (key == "MqttCommandTopicBaseValue") return "value=\""+lSettings.GetMqttCommandTopicBase()+"\"";
+    else if (key == "MqttStateTopicBaseValue") return "value=\""+lSettings.GetMqttStateTopicBase()+"\"";
+    else if (key == "MqttRetainCheckedValue") return lSettings.GetMqttRetain() == "1" ? "CHECKED" : " ";
+    else if (key == "MqttPayloadOnValue") return "value=\""+lSettings.GetMqttPayloadOn()+"\"";
+    else if (key == "MqttPayloadOffValue") return "value=\""+lSettings.GetMqttPayloadOff()+"\"";
 
     return "oops";
 }
@@ -55,7 +56,7 @@ void handle_index() {
 
 void handle_erase_settings() {
     Serial.println("Erasing settings...");
-    eraseAllSettings();
+    lSettings.EraseAll();
     server.sendHeader("Location", "/");
     server.send(303);
 }
@@ -98,20 +99,22 @@ void saveSettings() {
     Serial.print("MqttPayloadOff: ");
     Serial.println(MqttPayloadOff);
 
-    saveMqttBrokerHost(MqttBrokerHost);
-    saveMqttBrokerPort(MqttBrokerPort);
-    saveMqttCommandTopicBase(MqttCommandTopicBase);
-    saveMqttStateTopicBase(MqttStateTopicBase);
-    saveMqttPayloadOff(MqttPayloadOff);
-    saveMqttRetain(MqttRetain);
-    saveMqttPayloadOn(MqttPayloadOn);
+    lSettings.SetMqttBrokerHost(MqttBrokerHost);
+    lSettings.SetMqttBrokerPort(MqttBrokerPort);
+    lSettings.SetMqttCommandTopicBase(MqttCommandTopicBase);
+    lSettings.SetMqttStateTopicBase(MqttStateTopicBase);
+    lSettings.SetMqttPayloadOff(MqttPayloadOff);
+    lSettings.SetMqttRetain(MqttRetain);
+    lSettings.SetMqttPayloadOn(MqttPayloadOn);
+    lSettings.Save();
 
     server.sendHeader("Location", "/");
     server.send(303);  
 }
 
-void start_webserver() {
+void start_webserver(Settings& settings) {
     Serial.println("Starting webserver...");
+    lSettings = settings;
     SPIFFS.begin();
     server.on("/", HTTP_GET, handle_index);
     server.on("/", HTTP_POST, saveSettings);
