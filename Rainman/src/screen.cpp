@@ -1,46 +1,39 @@
 #include "screen.h"
 
-Adafruit_SSD1306 display(OLED_RESET);
-unsigned long last_shown_time;
-unsigned long last_cleared_time;
-
-int state;
-
-#define state_showing 0
-#define state_blank 1
-
-void start_screen() {
-    // by default, we'll generate the high voltage from the 3.3v line internally! (neat!)
-    display.begin(SSD1306_SWITCHCAPVCC, 0x3C);  // initialize with the I2C addr 0x3D (for the 128x64)
-    // init done
-
-    // Show image buffer on the display hardware.
-    // Since the buffer is intialized with an Adafruit splashscreen
-    // internally, this will display the splashscreen.
-    display.display();
-    last_shown_time = millis();
-    state = state_showing;
+Screen::Screen() : display(OLED_RESET) {
 }
 
-void handle_screen() {
-    if(state == state_showing) {
-        if(millis() - last_shown_time > 5000) {
-            display.clearDisplay();
-            display.display();
-            last_cleared_time = millis();
-            state = state_blank;
-        }
-    }
+void Screen::Start(State& state) {
+    this->state = state;
 
-    if(state == state_blank) {
-        if(millis() - last_cleared_time > 5000) {
-            display.setTextSize(2);
-            display.setTextColor(WHITE);
-            display.setCursor(0,0);
-            display.println("Rainman!");
-            display.display();
-            last_shown_time = millis();
-            state = state_showing;
-        }
+    // by default, we'll generate the high voltage from the 3.3v line internally! (neat!)
+    // init done
+    this->display.begin(SSD1306_SWITCHCAPVCC, 0x3C);  // initialize with the I2C addr 0x3D (for the 128x64)
+    this->display.clearDisplay();
+
+    this->DisplayStationStatus(1, this->state.GetStationStatus(1));
+    this->DisplayStationStatus(2, this->state.GetStationStatus(2));
+    this->DisplayStationStatus(3, this->state.GetStationStatus(3));
+    this->DisplayStationStatus(4, this->state.GetStationStatus(4));
+    this->DisplayStationStatus(5, this->state.GetStationStatus(5));
+    this->DisplayStationStatus(6, this->state.GetStationStatus(6));
+    
+    this->display.display();
+}
+
+void Screen::DisplayStationStatus(int stationNumber, bool status)
+{
+    int frontColor = status ? BLACK : WHITE;
+    int backColor = status ? WHITE : BLACK;
+    int n = stationNumber - 1;
+    if(status) {
+        this->display.fillRoundRect(n*21 + 1, 43, 20, 20, 4, backColor);
+    } else {
+        this->display.drawRoundRect(n*21 + 1, 43, 20, 20, 4, frontColor);
     }
+    this->display.drawChar(n*21 + 6, 46, stationNumber + '0', frontColor, backColor, 2);
+}
+
+void Screen::Handle() {
+    
 }

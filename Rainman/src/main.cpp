@@ -3,11 +3,14 @@
 #include "webserver.h"
 #include "screen.h"
 #include "settings.h"
+#include "state.h"
 
 const char* ssid     = "KInternet";
 const char* password = "+RSWKCpvCm\\j6`4";
 
+State state;
 Settings settings;
+Screen screen;
 
 void setup() {
     Serial.begin(115200);
@@ -18,7 +21,7 @@ void setup() {
     pinMode(D4, OUTPUT);
     pinMode(D5, OUTPUT);
 
-    start_screen();
+    screen.Start(state);
 
     /* Explicitly set the ESP8266 to be a WiFi-client, otherwise, it by default,
     would try to act as both a client and an access-point and could cause
@@ -45,6 +48,6 @@ void setup() {
 void loop() {
     handle_webserver();
     yield();
-    handle_screen();
+    screen.Handle();
     yield();
 }
